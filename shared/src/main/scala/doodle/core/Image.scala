@@ -13,16 +13,20 @@ sealed trait Image {
   def on(bottom: Image): Image =
     On(this, bottom)
 
-  def draw(canvas: Canvas): Unit =
-    ??? // structural recursion
+  def draw(canvas: Canvas): Unit = {
+    // structural recursion
     // Set size of canvas based on bounding box coordinates
     // Then draw image on canvas
+    val boundingBox: BoundingBox = BoundingBox(this) //This means we need apply method in bounding box that takes image
+    draw(canvas, boundingBox.width, boundingBox.height)
+  }
 
   // A helper method you will probably want
-  def draw(canvas: Canvas, originX: Double, originY: Double): Unit =
-    ???
-
-  // Need to create bounding box - then get coordinates of this bounding box to draw on.
+  def draw(canvas: Canvas, originX: Double, originY: Double): Unit = {
+    canvas.setSize(width, height)
+    canvas.setOrigin(origin.x.ceil.toInt, origin.y.ceil.toInt)
+    //Draw?
+   }
 }
 final case class Circle(radius: Double) extends Image
 final case class Rectangle(width: Double, height: Double) extends Image
