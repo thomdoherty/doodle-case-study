@@ -24,6 +24,15 @@ sealed trait Image {
 
   def on(bottom: Image): Image =
     On(this, bottom)
+    
+  def lineColor(color: Color): Image =
+    ContextTransform(_.lineColor(color), this)
+
+  def lineWidth(width: Double): Image =
+    ContextTransform(_.lineWidth(width), this)
+
+  def fillColor(color: Color): Image =
+    ContextTransform(_.fillColor(color), this)
 
   /*def draw(canvas: Canvas): Unit = {
     // structural recursion
@@ -32,6 +41,8 @@ sealed trait Image {
     val boundingBox: BoundingBox = BoundingBox(this) //This means we need apply method in bounding box that takes image
     draw(canvas, boundingBox.width, boundingBox.height)    
   }*/
+    
+    //def draw(canvas: Canvas): Unit =  draw(canvas, DrawingContext.whiteLines, Vec.zero)
   
   def draw(canvas: Canvas): Unit = this match {
      case Circle(r) => canvas.circle(0.0, 0.0, r)
@@ -42,10 +53,35 @@ sealed trait Image {
      }
 
   // A helper method you will probably want
-  /*def draw(canvas: Canvas, originX: Double, originY: Double): Unit = {
-    canvas.setSize(width, height)
-    canvas.setOrigin(origin.x.ceil.toInt, origin.y.ceil.toInt)
+  //def draw(canvas: Canvas, originX: Double, originY: Double): Unit = {
+    //canvas.setSize(width, height)
+    //canvas.setOrigin(origin.x.ceil.toInt, origin.y.ceil.toInt)
     //Draw?
+  /*  def draw(canvas: Canvas): Unit = {
+      val context = DrawingContext.whiteLines
+      val origin = Vec.zero
+      
+     def doStrokeAndFill() = {
+      context.fill.foreach { fill =>
+        canvas.setFill(fill.color)
+        canvas.fill()
+      }
+      context.stroke.foreach { stroke =>
+        canvas.setStroke(stroke)
+        canvas.stroke()
+      }
+    }
+      
+      this match {
+      case Circle(r) =>
+        canvas.circle(origin.x, origin.y, r)
+        doStrokeAndFill()
+
+      case Rectangle(w, h) =>
+        canvas.rectangle(origin.x - w/2, origin.y + h/2, w, h)
+        doStrokeAndFill()
+
+      }
    }*/
 }
 final case class Circle(radius: Double) extends Image
@@ -53,3 +89,4 @@ final case class Rectangle(width: Double, height: Double) extends Image
 final case class Above(above: Image, below: Image) extends Image
 final case class Beside(left: Image, right: Image) extends Image
 final case class On(top: Image, bottom: Image) extends Image
+final case class ContextTransform(f: DrawingContext => DrawingContext, image: Image) extends Image

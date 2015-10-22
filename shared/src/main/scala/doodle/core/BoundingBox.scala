@@ -37,15 +37,14 @@ final case class BoundingBox(leftCoordinate: Double,
 }
     
     //Need apply method overridden to handle image => need companion object
-   /* object BoundingBox{
+    object BoundingBox{
       
     def apply(image: Image): BoundingBox = image match {    
-      case Rectangle(width, height) =>
-        BoundingBox(-width/2, height/2, width/2, -height/2)
+      //case Rectangle(width, height) => BoundingBox(-width/2, height/2, width/2, -height/2)
       case Circle(r) => BoundingBox(-r, r, r, -r)
       case Rectangle(w, h) => BoundingBox(-w/2, h/2, w/2, -h/2)
-      case Above(a, b) => a.this above b.this
+      case Above(a, b) => a.boundingBox above b.boundingBox
       case On(o, u) => o.boundingBox on u.boundingBox
       case Beside(l, r) => l.boundingBox beside r.boundingBox
       }  
-   }*/
+   }

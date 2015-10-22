@@ -1,7 +1,6 @@
-package doodle
-package backend
+package doodle.backend
 
-import doodle.core.{Color, Stroke}
+import doodle.core. {Color, Stroke}
 
 /**
   * A canvas interface abstracts over the different vector drawing libraries we
