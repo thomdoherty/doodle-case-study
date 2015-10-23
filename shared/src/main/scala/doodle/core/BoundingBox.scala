@@ -46,5 +46,6 @@ final case class BoundingBox(leftCoordinate: Double,
       case Above(a, b) => a.boundingBox above b.boundingBox
       case On(o, u) => o.boundingBox on u.boundingBox
       case Beside(l, r) => l.boundingBox beside r.boundingBox
+      case ContextTransform(f, i) => i.boundingBox
       }  
    }
