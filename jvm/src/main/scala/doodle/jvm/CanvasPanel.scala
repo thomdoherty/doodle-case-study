@@ -2,12 +2,12 @@ package doodle
 package jvm
 
 import doodle.core.{Color, Line, RGBA, Stroke => DoodleStroke, Vec}
-import doodle.backend.Canvas
+import doodle.backend.{Canvas, Key}
 
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.awt.{Color => AwtColor, BasicStroke, Dimension, Graphics, Graphics2D, RenderingHints, Rectangle, Shape}
 import java.awt.geom.Path2D
-import java.awt.event.{ActionListener, ActionEvent}
+import java.awt.event.{ActionListener, ActionEvent, KeyListener, KeyEvent}
 import javax.swing.{JPanel, SwingUtilities, Timer}
 
 import scala.collection.mutable.Queue
@@ -22,6 +22,12 @@ class CanvasPanel extends JPanel {
   val canvas = new Java2DCanvas(this)
 
   var currentTimer: Timer = null
+
+  /** Release any resources held by this panel */
+  def close(): Unit = {
+    if(currentTimer != null)
+      currentTimer.stop()
+  }
 
   override def paintComponent(graphics: Graphics): Unit = {
     val context = graphics.asInstanceOf[Graphics2D]
@@ -115,7 +121,25 @@ class CanvasPanel extends JPanel {
         currentTimer = new Timer(MsPerFrame, listener)
         currentTimer.setRepeats(true)
         currentTimer.start()
+
+      case SetKeyDownCallback(callback) =>
+        val listener = new KeyListener() {
+          def keyPressed(evt: KeyEvent): Unit = {
+            callback(KeyCode.toKey(evt.getKeyCode()))
+          }
+
+          def keyReleased(evt: KeyEvent): Unit =
+            ()
+
+          def keyTyped(evt: KeyEvent): Unit =
+            ()
+        }
+        this.addKeyListener(listener)
     }
+
+    // We don't want to keep re-adding callbacks everytime we get a new
+    // operation, so remove operations that are not idempotent.
+    stripNonIdempotentOperations()
   }
   // The Ops we have pulled off the queue
   private val operations = new Queue[Op]() 
@@ -133,6 +157,21 @@ class CanvasPanel extends JPanel {
       operations += op
       op = queue.poll()
     }
+  }
+
+  /** Remove non-idempotent operations from the queue. Idempotent operations are
+    * those we can repeat without an observable effect. */
+  private def stripNonIdempotentOperations(): Unit = {
+    def idempotent(op: Op): Boolean = {
+      op match {
+        case SetAnimationFrameCallback(_) => false
+        case SetKeyDownCallback(_) => false
+        case _ => true
+      }
+    }
+    val safe = operations.filter(idempotent)
+    operations.clear()
+    operations ++= safe
   }
 
   private def awtColor(color: Color): AwtColor = {
@@ -156,4 +195,5 @@ object CanvasPanel {
   final case class BezierCurveTo(cp1x: Double, cp1y: Double, cp2x: Double, cp2y: Double, endX: Double, endY: Double) extends Op
   final case class EndPath() extends Op
   final case class SetAnimationFrameCallback(callbacl: Double => Unit) extends Op
+  final case class SetKeyDownCallback(callback: Key => Unit) extends Op
 }

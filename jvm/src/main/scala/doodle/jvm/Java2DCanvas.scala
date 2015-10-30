@@ -2,9 +2,9 @@ package doodle
 package jvm
 
 import doodle.core.{Color, Stroke => DoodleStroke}
-import doodle.backend.Canvas
+import doodle.backend.{Canvas, Key}
 
-class Java2DCanvas(panel: CanvasPanel) extends Canvas {
+class Java2DCanvas(val panel: CanvasPanel) extends Canvas {
   import CanvasPanel._
 
   val queue = panel.queue
@@ -40,6 +40,8 @@ class Java2DCanvas(panel: CanvasPanel) extends Canvas {
     queueAndRepaint(Stroke())
   def setAnimationFrameCallback(callback: Double => Unit): Unit =
     queue.add(SetAnimationFrameCallback(callback))
+  def setKeyDownCallback(callback: Key => Unit): Unit =
+    queue.add(SetKeyDownCallback(callback))
 }
 
 object Java2DCanvas {
