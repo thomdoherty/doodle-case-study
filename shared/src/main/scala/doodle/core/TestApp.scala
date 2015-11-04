@@ -3,6 +3,7 @@ package doodle.core
 import doodle.jvm.Java2DCanvas
 
 object TestApp extends App {
+  /*
   val canvas = Java2DCanvas.canvas 
   
   val image1 = Rectangle(100,200) fillColor Color.black
@@ -16,6 +17,7 @@ object TestApp extends App {
       (bb.topCoordinate - bb.bottomCoordinate).toInt)
       
   image4.draw(canvas)
+  */
   
   //Dog
 //  canvas.setSize(500, 500)

@@ -6,6 +6,18 @@ import doodle.event._
 import doodle.jvm.Java2DCanvas
 
 object TestAnimation extends App {
+  
+  val source = Source[Int]
+  val tomatoSauce = source.map(_*2)
+  val mintSauce = source.map(_.toString)
+  
+  val joinedSauce = tomatoSauce.join(mintSauce)
+ // source.map(_*2).map(println)
+  joinedSauce.map(println)
+  
+  //source.process(1)
+  List(1,2,3,4).foreach(source.process)
+  /*
   val canvas = Java2DCanvas.canvas
   canvas.setSize(600, 600)
   val redraw = canvas.animationFrameEventStream(canvas)
@@ -28,5 +40,6 @@ object TestAnimation extends App {
       val location = prev + velocity
       Vec(location.x.min(300).max(-300), location.y.min(300).max(-300))
     }
+    */
 
 }
